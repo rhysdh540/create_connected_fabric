@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "create_connected",
+  "version": "${mod_version}",
+  "name": "Create: Connected",
+  "description": "Quality-of-life blocks that you wish existed in Create.",
+  "authors": [ "Lysine", "rdh" ],
+  "contact": {
+    "homepage": "https://github.com/rhysdh540/create_connected_fabric",
+    "sources": "https://github.com/rhysdh540/create_connected_fabric",
+    "issues": "https://github.com/rhysdh540/create_connected_fabric/issues"
+  },
+  "license": "AGPL-3.0-or-later",
+  "icon": "create_connected_icon.png",
+  "environment": "*",
+  "entrypoints": {
+    // TODO
+  },
+  "mixins": [
+    "create_connected.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "~1.20.1",
+    "fabricloader": ">=${fabric_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "create": ">=${create_version}"
+  },
+  "accessWidener": "create_connected.accesswidener",
+  "custom": {
+    "modmenu": {
+      "parent": {
+        "id": "create"
+      },
+      "links": {
+        "Modrinth": "https://modrinth.com/mod/create-connected",
+        "CurseForge": "https://curseforge.com/minecraft/mc-mods/create-connected",
+        "Discord": "https://discord.gg/3AvrppcgG3"
+      }
+    }
+  }
+}

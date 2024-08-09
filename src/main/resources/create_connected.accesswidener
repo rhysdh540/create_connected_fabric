@@ -1,0 +1,8 @@
+accessWidener   v2  named
+
+accessible field net/minecraft/world/level/block/ButtonBlock type Lnet/minecraft/world/level/block/state/properties/BlockSetType;
+accessible field net/minecraft/world/level/block/ButtonBlock ticksToStayPressed I
+accessible field net/minecraft/world/level/block/ButtonBlock arrowsCanPress Z
+
+accessible method net/minecraft/world/level/block/entity/JukeboxBlockEntity stopPlaying ()V
+accessible method net/minecraft/client/renderer/LevelRenderer notifyNearbyEntities (Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)V

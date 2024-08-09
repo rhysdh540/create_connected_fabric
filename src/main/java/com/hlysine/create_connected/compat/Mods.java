@@ -1,12 +1,14 @@
 package com.hlysine.create_connected.compat;
 
 import com.google.gson.JsonObject;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -43,11 +45,11 @@ public enum Mods {
     }
 
     public Item getItem(String id) {
-        return ForgeRegistries.ITEMS.getValue(rl(id));
+        return getItem(rl(id));
     }
 
     public Item getItem(ResourceLocation id) {
-        return ForgeRegistries.ITEMS.getValue(id);
+        return BuiltInRegistries.ITEM.get(id);
     }
 
     /**
@@ -73,7 +75,7 @@ public enum Mods {
      * @return a boolean of whether the mod is loaded or not based on mod id
      */
     public boolean isLoaded() {
-        return ModList.get().isLoaded(id);
+        return FabricLoader.getInstance().isModLoaded(id);
     }
 
     /**
