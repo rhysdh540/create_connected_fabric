@@ -9,6 +9,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -16,8 +17,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.LogicalSide;
 
 import java.util.*;
 
@@ -28,17 +27,17 @@ public class CopycatsManager {
     public static final Map<Level, Set<BlockPos>> migrationQueue = Collections.synchronizedMap(new WeakHashMap<>());
 
     static {
-        BLOCK_MAP.put(CCBlocks.COPYCAT_BLOCK.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_BLOCK);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_SLAB.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_SLAB);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_BEAM.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_BEAM);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_VERTICAL_STEP.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_VERTICAL_STEP);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_STAIRS.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_STAIRS);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_FENCE.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_FENCE);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_FENCE_GATE.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_FENCE_GATE);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_WALL.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_WALL);
-        BLOCK_MAP.put(CCBlocks.COPYCAT_BOARD.getKey().location().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_BOARD);
-        ITEM_MAP.put(CCItems.COPYCAT_BOX.getKey().location().getPath(), com.copycatsplus.copycats.CCItems.COPYCAT_BOX);
-        ITEM_MAP.put(CCItems.COPYCAT_CATWALK.getKey().location().getPath(), com.copycatsplus.copycats.CCItems.COPYCAT_CATWALK);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_BLOCK.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_BLOCK);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_SLAB.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_SLAB);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_BEAM.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_BEAM);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_VERTICAL_STEP.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_VERTICAL_STEP);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_STAIRS.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_STAIRS);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_FENCE.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_FENCE);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_FENCE_GATE.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_FENCE_GATE);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_WALL.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_WALL);
+        BLOCK_MAP.put(CCBlocks.COPYCAT_BOARD.getId().getPath(), com.copycatsplus.copycats.CCBlocks.COPYCAT_BOARD);
+        ITEM_MAP.put(CCItems.COPYCAT_BOX.getId().getPath(), com.copycatsplus.copycats.CCItems.COPYCAT_BOX);
+        ITEM_MAP.put(CCItems.COPYCAT_CATWALK.getId().getPath(), com.copycatsplus.copycats.CCItems.COPYCAT_CATWALK);
     }
 
     public static Block convert(Block self) {
@@ -124,39 +123,40 @@ public class CopycatsManager {
                 .add(pos);
     }
 
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.haveTime() && event.side == LogicalSide.SERVER) {
-            if (!CCConfigs.common().migrateCopycatsOnInitialize.get()) {
-                migrationQueue.clear();
-                return;
-            }
-            Level level = event.level;
-            synchronized (migrationQueue) {
-                if (migrationQueue.containsKey(level)) {
-                    Set<BlockPos> list = migrationQueue.get(level);
-                    synchronized (list) {
-                        if (list.size() > 0)
-                            CreateConnected.LOGGER.debug("Copycats: Migrated " + list.size() + " copycats in " + level.dimension().location());
-                        for (Iterator<BlockPos> iterator = list.iterator(); iterator.hasNext(); ) {
-                            BlockPos pos = iterator.next();
-                            if (!level.isLoaded(pos)) {
-                                iterator.remove();
-                                continue;
-                            }
-                            BlockState state = level.getBlockState(pos);
-                            BlockState converted = CopycatsManager.convert(state);
-                            if (!converted.is(state.getBlock())) {
-                                level.setBlock(pos, converted, 2 | 16 | 32);
-                            }
-                            // Re-set block entity to trigger Copycats+ migration
-                            BlockEntity be = level.getBlockEntity(pos);
-                            if (be != null)
-                                level.setBlockEntity(be);
-                            iterator.remove();
-                        }
-                    }
-                }
-            }
-        }
-    }
+    public static void onLevelTick(ServerLevel level) {
+		if (!CCConfigs.common().migrateCopycatsOnInitialize.get()) {
+			migrationQueue.clear();
+			return;
+		}
+
+		synchronized (migrationQueue) {
+			if(!migrationQueue.containsKey(level)) {
+				return;
+			}
+
+			Set<BlockPos> list = migrationQueue.get(level);
+			synchronized (list) {
+				if (!list.isEmpty())
+					CreateConnected.LOGGER.debug("Copycats: Migrated {} copycats in {}", list.size(), level.dimension().location());
+
+				for (Iterator<BlockPos> iterator = list.iterator(); iterator.hasNext(); ) {
+					BlockPos pos = iterator.next();
+					if (!level.isLoaded(pos)) {
+						iterator.remove();
+						continue;
+					}
+					BlockState state = level.getBlockState(pos);
+					BlockState converted = CopycatsManager.convert(state);
+					if (!converted.is(state.getBlock())) {
+						level.setBlock(pos, converted, 2 | 16 | 32);
+					}
+					// Re-set block entity to trigger Copycats+ migration
+					BlockEntity be = level.getBlockEntity(pos);
+					if (be != null)
+						level.setBlockEntity(be);
+					iterator.remove();
+				}
+			}
+		}
+	}
 }

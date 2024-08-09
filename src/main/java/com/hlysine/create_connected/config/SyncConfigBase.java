@@ -1,19 +1,17 @@
 package com.hlysine.create_connected.config;
 
 import com.hlysine.create_connected.CreateConnected;
+import io.github.fabricators_of_create.porting_lib.util.EnvExecutor;
+import io.github.fabricators_of_create.porting_lib.util.ServerLifecycleHooks;
+import me.pepperbell.simplenetworking.SimpleChannel;
+import net.fabricmc.api.EnvType;
+
 import com.simibubi.create.foundation.config.ConfigBase;
+import com.simibubi.create.foundation.networking.SimplePacketBase.Context;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent.Context;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -63,11 +61,11 @@ public abstract class SyncConfigBase extends ConfigBase {
             BiConsumer<T, Supplier<Context>> messageConsumer,
             Function<CompoundTag, T> messageSupplier
     ) {
-        syncChannel = NetworkRegistry.newSimpleChannel(
-                CreateConnected.asResource("config_" + getName()),
-                () -> configVersion,
-                configVersion::equals,
-                configVersion::equals
+        syncChannel = new SimpleChannel(
+                CreateConnected.asResource("config_" + getName())
+//                () -> configVersion,
+//                configVersion::equals,
+//                configVersion::equals
         );
         syncChannel.registerMessage(
                 0,
@@ -131,9 +129,9 @@ public abstract class SyncConfigBase extends ConfigBase {
 
         void handle(Supplier<Context> context) {
             Context ctx = context.get();
-            ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            ctx.enqueueWork(() -> EnvExecutor.runWhenOn(EnvType.CLIENT, () -> () -> {
                 configInstance().setSyncConfig(nbt);
-                CreateConnected.LOGGER.debug("Sync Config: Received and applied server config " + nbt.toString());
+				CreateConnected.LOGGER.debug("Sync Config: Received and applied server config {}", nbt.toString());
             }));
             ctx.setPacketHandled(true);
         }

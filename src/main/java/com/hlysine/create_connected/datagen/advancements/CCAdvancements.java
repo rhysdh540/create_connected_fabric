@@ -9,6 +9,8 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.PathProvider;
 import net.minecraft.resources.ResourceLocation;
+
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -91,7 +93,7 @@ public class CCAdvancements implements DataProvider {
 
     private final PackOutput output;
 
-    public CCAdvancements(PackOutput output) {
+    public CCAdvancements(FabricDataOutput output) {
         this.output = output;
     }
 

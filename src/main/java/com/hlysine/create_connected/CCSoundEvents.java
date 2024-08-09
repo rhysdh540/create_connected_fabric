@@ -2,6 +2,8 @@ package com.hlysine.create_connected;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
@@ -69,8 +71,8 @@ public class CCSoundEvents {
                 consumer.accept(entry.getSubtitleKey(), entry.getSubtitle());
     }
 
-    public static SoundEntryProvider provider(DataGenerator generator) {
-        return new SoundEntryProvider(generator);
+    public static SoundEntryProvider provider(FabricDataOutput output) {
+        return new SoundEntryProvider(output);
     }
 
 //	@SubscribeEvent
@@ -87,11 +89,11 @@ public class CCSoundEvents {
 
         private PackOutput output;
 
-        public SoundEntryProvider(DataGenerator generator) {
-            output = generator.getPackOutput();
+        public SoundEntryProvider(FabricDataOutput output) {
+            this.output = output;
         }
 
-        @Override
+		@Override
         public CompletableFuture<?> run(CachedOutput cache) {
             return generate(output.getOutputFolder(), cache);
         }

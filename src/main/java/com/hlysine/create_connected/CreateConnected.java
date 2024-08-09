@@ -22,17 +22,15 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod(CreateConnected.MODID)
-public class CreateConnected {
-    // Define mod id in a common place for everything to reference
+public class CreateConnected implements ModInitializer {
     public static final String MODID = "create_connected";
-    // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static IEventBus modEventBus;
     private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID);
 
     static {
@@ -40,45 +38,30 @@ public class CreateConnected {
                 .andThen(TooltipModifier.mapNull(KineticStats.create(item))));
     }
 
-    public CreateConnected() {
-        modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
-        REGISTRATE.registerEventListeners(modEventBus);
-
-        // Register the commonSetup method for mod loading
-        modEventBus.addListener(this::commonSetup);
+    public void onInitialize() {
         CCCraftingConditions.register();
 
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
-
-        REGISTRATE.setCreativeTab(CCCreativeTabs.MAIN);
         CCSoundEvents.prepare();
         CCBlocks.register();
         CCItems.register();
         CCBlockEntityTypes.register();
-        CCCreativeTabs.register(modEventBus);
+        CCCreativeTabs.register();
         CCPackets.registerPackets();
 
-        CCConfigs.register(ModLoadingContext.get());
+        CCConfigs.register();
         CCConfigs.common().register();
 
         CCInteractionBehaviours.register();
         CCMovementBehaviours.register();
 
         if (Mods.COPYCATS.isLoaded())
-            forgeEventBus.addListener(CopycatsManager::onLevelTick);
+            ServerTickEvents.END_WORLD_TICK.register(CopycatsManager::onLevelTick);
 
-        modEventBus.addListener(EventPriority.LOWEST, CCDatagen::gatherData);
+        CCAdvancements.register();
+        CCTriggers.register();
+
         modEventBus.addListener(CCSoundEvents::register);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CreateConnectedClient.onCtorClient(modEventBus, forgeEventBus));
-    }
-
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            CCAdvancements.register();
-            CCTriggers.register();
-        });
     }
 
     public static CreateRegistrate getRegistrate() {

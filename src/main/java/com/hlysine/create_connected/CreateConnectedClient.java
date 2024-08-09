@@ -1,19 +1,12 @@
 package com.hlysine.create_connected;
 
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.fabricmc.api.ClientModInitializer;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
-public class CreateConnectedClient {
-    public static void onCtorClient(IEventBus modEventBus, IEventBus forgeEventBus) {
+public class CreateConnectedClient implements ClientModInitializer {
+    @Override
+    public void onInitializeClient() {
         CCPartialModels.register();
-        modEventBus.addListener(CreateConnectedClient::init);
-    }
-
-    public static void init(final FMLClientSetupEvent event) {
         CCPonders.register();
     }
 }

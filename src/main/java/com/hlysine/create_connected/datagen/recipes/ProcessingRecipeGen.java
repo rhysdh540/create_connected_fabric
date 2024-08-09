@@ -8,13 +8,12 @@ import com.simibubi.create.foundation.data.recipe.CreateRecipeProvider;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import com.simibubi.create.foundation.utility.RegisteredObjects;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.fluids.FluidType;
+
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -27,15 +26,13 @@ import java.util.function.UnaryOperator;
 public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
 
     protected static final List<ProcessingRecipeGen> GENERATORS = new ArrayList<>();
-    protected static final int BUCKET = FluidType.BUCKET_VOLUME;
-    protected static final int BOTTLE = 250;
 
-    public static void registerAll(DataGenerator gen, PackOutput output) {
+    public static DataProvider registerAll(FabricDataOutput output) {
         GENERATORS.add(new CuttingRecipeGen(output));
         GENERATORS.add(new ItemApplicationRecipeGen(output));
         GENERATORS.add(new FillingRecipeGen(output));
 
-        gen.addProvider(true, new DataProvider() {
+        return new DataProvider() {
 
             @Override
             public @NotNull String getName() {
@@ -48,10 +45,10 @@ public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
                         .map(gen -> gen.run(dc))
                         .toArray(CompletableFuture[]::new));
             }
-        });
+        };
     }
 
-    public ProcessingRecipeGen(PackOutput generator) {
+    public ProcessingRecipeGen(FabricDataOutput generator) {
         super(generator);
     }
 

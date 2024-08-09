@@ -35,6 +35,8 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.common.crafting.conditions.NotCondition;
+
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -687,8 +689,8 @@ public class CCStandardRecipes extends CreateRecipeProvider {
         return "Create: Connected's Standard Recipes";
     }
 
-    public CCStandardRecipes(PackOutput p_i48262_1_) {
-        super(p_i48262_1_);
+    public CCStandardRecipes(FabricDataOutput output) {
+        super(output);
     }
 
     private static class ModdedCookingRecipeResult implements FinishedRecipe {

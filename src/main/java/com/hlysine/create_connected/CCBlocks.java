@@ -72,9 +72,14 @@ import com.simibubi.create.foundation.utility.Iterate;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import io.github.fabricators_of_create.porting_lib.models.generators.ConfiguredModel;
+import io.github.fabricators_of_create.porting_lib.models.generators.ModelFile;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Rarity;
@@ -89,10 +94,6 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -309,7 +310,7 @@ public class CCBlocks {
 
     static {
         BlockSetType.values().forEach(type -> {
-            Block button = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(type.name() + "_button"));
+            Block button = BuiltInRegistries.BLOCK.get(new ResourceLocation(type.name() + "_button"));
             if (button == null) return;
             if (!(button instanceof ButtonBlock buttonBlock))
                 return;
@@ -739,10 +740,11 @@ public class CCBlocks {
     public static void register() {
     }
 
-    private static Function<BlockState, ModelFile> forBoolean(DataGenContext<?, ?> ctx,
-                                                              Function<BlockState, Boolean> condition,
-                                                              String key,
-                                                              RegistrateBlockstateProvider prov) {
+    private static ModelFile forBoolean(DataGenContext<?, ?> ctx,
+                                        Function<BlockState, Boolean> condition,
+                                        String key,
+                                        RegistrateBlockstateProvider prov) {
+        // TODO: whar
         return state -> condition.apply(state) ? partialBaseModel(ctx, prov, key)
                 : partialBaseModel(ctx, prov);
     }

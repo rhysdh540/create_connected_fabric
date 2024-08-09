@@ -26,7 +26,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -40,11 +42,11 @@ public class BoilerData extends com.simibubi.create.content.fluids.tank.BoilerDa
 
     static final int SAMPLE_RATE = 5;
 
-    private static final int waterSupplyPerLevel = 10;
+    private static final int waterSupplyPerLevel = 10 * 81; // fabric: values are 81 times greater
     private static final float passiveEngineEfficiency = 1 / 8f;
 
     // pooled water supply
-    int gatheredSupply;
+    long gatheredSupply;
     float[] supplyOverTime = new float[10];
     int ticksUntilNextSample;
     int currentIndex;
@@ -75,7 +77,7 @@ public class BoilerData extends com.simibubi.create.content.fluids.tank.BoilerDa
         ticksUntilNextSample--;
         if (ticksUntilNextSample > 0)
             return;
-        int capacity = controller.getTankInventory().getCapacity();
+        long capacity = controller.getTankInventory().getCapacity();
         if (capacity == 0)
             return;
 
@@ -426,7 +428,7 @@ public class BoilerData extends com.simibubi.create.content.fluids.tank.BoilerDa
     @Override
     public CompoundTag write() {
         CompoundTag nbt = new CompoundTag();
-        nbt.putFloat("Supply", waterSupply);
+        nbt.putDouble("Supply", waterSupply);
         nbt.putInt("ActiveHeat", activeHeat);
         nbt.putBoolean("PassiveHeat", passiveHeat);
         nbt.putInt("Engines", attachedEngines);
@@ -460,13 +462,11 @@ public class BoilerData extends com.simibubi.create.content.fluids.tank.BoilerDa
     public class BoilerFluidHandler extends com.simibubi.create.content.fluids.tank.BoilerData.BoilerFluidHandler {
 
         @Override
-        public int fill(FluidStack resource, FluidAction action) {
-            if (!isFluidValid(0, resource))
+        public long insert(FluidVariant insertedVariant, long maxAmount, TransactionContext transaction) {
+            if (!isFluidValid(insertedVariant))
                 return 0;
-            int amount = resource.getAmount();
-            if (action.execute())
-                gatheredSupply += amount;
-            return amount;
+            gatheredSupply += maxAmount;
+            return maxAmount;
         }
 
     }

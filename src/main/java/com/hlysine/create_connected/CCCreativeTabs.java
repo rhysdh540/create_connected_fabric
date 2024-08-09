@@ -1,27 +1,25 @@
 package com.hlysine.create_connected;
 
 import com.hlysine.create_connected.config.FeatureToggle;
-import com.simibubi.create.AllCreativeModeTabs;
+import com.simibubi.create.AllCreativeModeTabs.TabInfo;
+
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
+
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 public class CCCreativeTabs {
-    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "create_connected" namespace
-    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateConnected.MODID);
-
     public static final List<ItemProviderEntry<?>> ITEMS = List.of(
             CCBlocks.ENCASED_CHAIN_COGWHEEL,
             CCBlocks.CRANK_WHEEL,
@@ -74,30 +72,19 @@ public class CCCreativeTabs {
             CCBlocks.BAMBOO_WINDOW_PANE
     );
 
-    public static final RegistryObject<CreativeModeTab> MAIN = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
+    public static final TabInfo MAIN = register("main", () -> FabricItemGroup.builder()
             .title(Component.translatable("itemGroup.create_connected.main"))
-            .withTabsBefore(AllCreativeModeTabs.PALETTES_CREATIVE_TAB.getKey())
             .icon(CCBlocks.PARALLEL_GEARBOX::asStack)
+//            .withTabsBefore(AllCreativeModeTabs.PALETTES_CREATIVE_TAB.getKey())
             .displayItems(new DisplayItemsGenerator(ITEMS))
             .build());
 
-    public static void hideItems(BuildCreativeModeTabContentsEvent event) {
-        if (Objects.equals(event.getTabKey(), MAIN.getKey()) || Objects.equals(event.getTabKey(), CreativeModeTabs.SEARCH)) {
-            Set<Item> hiddenItems = ITEMS.stream()
-                    .filter(x -> !FeatureToggle.isEnabled(x.getId()))
-                    .map(ItemProviderEntry::asItem)
-                    .collect(Collectors.toSet());
-            for (Iterator<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>> iterator = event.getEntries().iterator(); iterator.hasNext(); ) {
-                Map.Entry<ItemStack, CreativeModeTab.TabVisibility> entry = iterator.next();
-                if (hiddenItems.contains(entry.getKey().getItem()))
-                    iterator.remove();
-            }
-        }
-    }
-
-    public static void register(IEventBus modEventBus) {
-        CREATIVE_MODE_TABS.register(modEventBus);
-        modEventBus.addListener(CCCreativeTabs::hideItems);
+    private static TabInfo register(String name, Supplier<CreativeModeTab> supplier) {
+        ResourceLocation id = CreateConnected.asResource(name);
+        ResourceKey<CreativeModeTab> key = ResourceKey.create(Registries.CREATIVE_MODE_TAB, id);
+        CreativeModeTab tab = supplier.get();
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, key, tab);
+        return new TabInfo(key, tab);
     }
 
     private record DisplayItemsGenerator(
@@ -110,5 +97,8 @@ public class CCCreativeTabs {
                 }
             }
         }
+    }
+
+    public static void register() {
     }
 }

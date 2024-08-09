@@ -1,9 +1,10 @@
 package com.hlysine.create_connected.datagen.recipes;
 
 import com.hlysine.create_connected.CCBlocks;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
-import net.minecraft.data.PackOutput;
 
 @SuppressWarnings("unused")
 public class CuttingRecipeGen extends ProcessingRecipeGen {
@@ -12,7 +13,7 @@ public class CuttingRecipeGen extends ProcessingRecipeGen {
             .withCondition(new FeatureEnabledCondition(CCBlocks.SHEAR_PIN.getId()))
             .output(CCBlocks.SHEAR_PIN.get()));
 
-    public CuttingRecipeGen(PackOutput output) {
+    public CuttingRecipeGen(FabricDataOutput output) {
         super(output);
     }
 

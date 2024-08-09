@@ -3,27 +3,26 @@ package com.hlysine.create_connected.mixin;
 import com.hlysine.create_connected.config.CServer;
 import com.simibubi.create.content.kinetics.deployer.ManualApplicationRecipe;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = ManualApplicationRecipe.class, remap = false)
+@Mixin(ManualApplicationRecipe.class)
 public class ManualApplicationRecipeMixin {
     @Inject(
-            method = "manualApplicationRecipesApplyInWorld(Lnet/minecraftforge/event/entity/player/PlayerInteractEvent$RightClickBlock;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"),
-            remap = true
+            method = "manualApplicationRecipesApplyInWorld",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V")
     )
-    private static void craftingRemainingItemOnApplication(PlayerInteractEvent.RightClickBlock event, CallbackInfo info) {
+    private static void craftingRemainingItemOnApplication(Player player, Level level, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!CServer.ApplicationRemainingItemFix.get()) return;
 
-        ItemStack heldItem = event.getItemStack();
-        Player player = event.getEntity();
-        InteractionHand hand = event.getHand();
+        ItemStack heldItem = player.getItemInHand(hand);
         ItemStack leftover = heldItem.hasCraftingRemainingItem() ? heldItem.getCraftingRemainingItem() : ItemStack.EMPTY;
 
         heldItem.shrink(1);

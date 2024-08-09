@@ -13,13 +13,11 @@ public class CCSequencerInstructions {
 
     static {
         for (SequencerInstructions value : SequencerInstructions.values()) {
-            if (value.name().equals("TURN_AWAIT")) {
-                TURN_AWAIT = value;
-            } else if (value.name().equals("TURN_TIME")) {
-                TURN_TIME = value;
-            } else if (value.name().equals("LOOP")) {
-                LOOP = value;
-            }
+			switch(value.name()) {
+				case "TURN_AWAIT" -> TURN_AWAIT = value;
+				case "TURN_TIME" -> TURN_TIME = value;
+				case "LOOP" -> LOOP = value;
+			}
         }
     }
 }

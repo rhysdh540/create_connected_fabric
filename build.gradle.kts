@@ -61,6 +61,26 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${"minecraft_version"()}-common:${"jei_version"()}")
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.processResources {
+    val props = mapOf(
+        "mod_version" to project.version,
+        "minecraft_version" to "minecraft_version"(),
+        "fabric_loader_version" to "fabric_loader_version"(),
+        "fabric_api_version" to "fabric_api_version"(),
+        "create_version" to "create_version"(),
+    )
+
+    inputs.properties(props)
+
+    filesMatching("fabric.mod.json") {
+        expand(props)
+    }
+}
+
 loom {
     accessWidenerPath = file("src/main/resources/create_connected.accesswidener")
 }

@@ -4,6 +4,9 @@ import com.hlysine.create_connected.CCPartialModels;
 import com.jozufozu.flywheel.api.Instancer;
 import com.jozufozu.flywheel.api.Material;
 import com.jozufozu.flywheel.core.materials.model.ModelData;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlock;
 import com.simibubi.create.content.kinetics.crank.HandCrankBlockEntity;
@@ -14,8 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class CrankWheelBlockEntity extends HandCrankBlockEntity {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public SuperByteBuffer getRenderedHandle() {
         BlockState blockState = getBlockState();
         Direction facing = blockState.getOptionalValue(HandCrankBlock.FACING)
@@ -48,7 +49,7 @@ public class CrankWheelBlockEntity extends HandCrankBlockEntity {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Instancer<ModelData> getRenderedHandleInstance(Material<ModelData> material) {
         BlockState blockState = getBlockState();
         Direction facing = blockState.getOptionalValue(HandCrankBlock.FACING)

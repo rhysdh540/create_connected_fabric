@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.RecordItem;
-import net.minecraftforge.network.NetworkEvent;
 
 public class PlayContraptionJukeboxPacket extends SimplePacketBase {
 
@@ -55,7 +54,7 @@ public class PlayContraptionJukeboxPacket extends SimplePacketBase {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean handle(NetworkEvent.Context context) {
+    public boolean handle(Context context) {
         context.enqueueWork(() -> {
             ClientLevel world = Minecraft.getInstance().level;
             if (world == null || !world.dimension().location().equals(level))

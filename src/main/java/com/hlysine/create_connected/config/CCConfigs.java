@@ -3,11 +3,11 @@ package com.hlysine.create_connected.config;
 import com.simibubi.create.content.kinetics.BlockStressValues;
 import com.simibubi.create.foundation.config.ConfigBase;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+
+import com.hlysine.create_connected.CreateConnected;
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.EnumMap;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CCConfigs {
 
     private static final Map<ModConfig.Type, ConfigBase> CONFIGS = new EnumMap<>(ModConfig.Type.class);
@@ -59,29 +58,28 @@ public class CCConfigs {
         return config;
     }
 
-    public static void register(ModLoadingContext context) {
+    public static void register() {
         common = register(CCommon::new, ModConfig.Type.COMMON);
         server = register(CServer::new, ModConfig.Type.SERVER);
 
         for (Map.Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet())
-            context.registerConfig(pair.getKey(), pair.getValue().specification);
+            ForgeConfigRegistry.INSTANCE.register(CreateConnected.MODID, pair.getKey(), pair.getValue().specification);
 
-        BlockStressValues.registerProvider(context.getActiveNamespace(), server().stressValues);
+        BlockStressValues.registerProvider(CreateConnected.MODID, server().stressValues); // TODO: check if this is correct
+
+        ModConfigEvents.loading(CreateConnected.MODID).register(CCConfigs::onLoad);
+        ModConfigEvents.reloading(CreateConnected.MODID).register(CCConfigs::onReload);
     }
 
-    @SubscribeEvent
-    public static void onLoad(ModConfigEvent.Loading event) {
+    public static void onLoad(ModConfig modConfig) {
         for (ConfigBase config : CONFIGS.values())
-            if (config.specification == event.getConfig()
-                    .getSpec())
+            if (config.specification == modConfig.getSpec())
                 config.onLoad();
     }
 
-    @SubscribeEvent
-    public static void onReload(ModConfigEvent.Reloading event) {
+    public static void onReload(ModConfig modConfig) {
         for (ConfigBase config : CONFIGS.values())
-            if (config.specification == event.getConfig()
-                    .getSpec())
+            if (config.specification == modConfig.getSpec())
                 config.onReload();
     }
 

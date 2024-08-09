@@ -3,7 +3,8 @@ package com.hlysine.create_connected.mixin.itemsilo;
 import com.hlysine.create_connected.content.itemsilo.ItemSiloBlockEntity;
 import com.simibubi.create.content.contraptions.MountedStorage;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.ItemStackHandler;
+
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

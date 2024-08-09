@@ -28,9 +28,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.ticks.TickPriority;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
+
+import io.github.fabricators_of_create.porting_lib.util.EnvExecutor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.NotNull;
 
 public class SequencedPulseGeneratorBlock extends AbstractDiodeBlock implements IBE<SequencedPulseGeneratorBlockEntity> {
@@ -157,12 +158,12 @@ public class SequencedPulseGeneratorBlock extends AbstractDiodeBlock implements 
         if (AllItems.WRENCH.isIn(held))
             return InteractionResult.PASS;
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+        EnvExecutor.runWhenOn(EnvType.CLIENT,
                 () -> () -> withBlockEntityDo(worldIn, pos, be -> this.displayScreen(be, player)));
         return InteractionResult.SUCCESS;
     }
 
-    @OnlyIn(value = Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     protected void displayScreen(SequencedPulseGeneratorBlockEntity be, Player player) {
         if (player instanceof LocalPlayer)
             ScreenOpener.open(new SequencedPulseGeneratorScreen(be));

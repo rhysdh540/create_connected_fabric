@@ -13,38 +13,42 @@ import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.ponder.PonderLocalization;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.tterrag.registrate.providers.ProviderType;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class CCDatagen {
+public class CCDatagen implements DataGeneratorEntrypoint {
 
     private static final CreateRegistrate REGISTRATE = CreateConnected.getRegistrate();
 
-    public static void gatherData(GatherDataEvent event) {
+    public void onInitializeDataGenerator(FabricDataGenerator gen) {
         addExtraRegistrateData();
 
-        DataGenerator generator = event.getGenerator();
-        PackOutput output = generator.getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
+        Path existingResources = Paths.get(System.getProperty(ExistingFileHelper.EXISTING_RESOURCES));
+        // fixme re-enable the existing file helper when porting lib's ResourcePackLoader.createPackForMod is fixed
+        ExistingFileHelper helper = new ExistingFileHelper(
+                Set.of(existingResources), Set.of("create"), false, null, null
+        );
 
-        if (event.includeClient()) {
-            generator.addProvider(true, CCSoundEvents.provider(generator));
-        }
+        FabricDataGenerator.Pack pack = gen.createPack();
 
-        if (event.includeServer()) {
-            generator.addProvider(true, new CCAdvancements(output));
-            generator.addProvider(true, new CCStandardRecipes(output));
-            generator.addProvider(true, new SequencedAssemblyGen(output));
-            ProcessingRecipeGen.registerAll(generator, output);
-        }
+        CreateConnected.getRegistrate().setupDatagen(pack, helper);
+
+        // if client
+        pack.addProvider(CCSoundEvents::provider);
+
+        // if server
+        pack.addProvider(CCAdvancements::new);
+        pack.addProvider(CCStandardRecipes::new);
+        pack.addProvider(SequencedAssemblyGen::new);
+        pack.addProvider(ProcessingRecipeGen::registerAll);
     }
 
     private static void addExtraRegistrateData() {
@@ -76,11 +80,8 @@ public class CCDatagen {
     }
 
     private static void providePonderLang(BiConsumer<String, String> consumer) {
-        // Register these since FMLClientSetupEvent does not run during datagen
         CCPonders.register();
-
         PonderLocalization.generateSceneLang();
-
         PonderLocalization.provideLang(CreateConnected.MODID, consumer);
     }
 }
