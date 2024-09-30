@@ -42,7 +42,7 @@ public class ItemSiloBlockEntity extends SmartBlockEntity implements IMultiBlock
             @Override
             protected void onContentsChanged(int slot) {
                 super.onContentsChanged(slot);
-                updateComparators();
+                ItemSiloBlockEntity.this.updateComparators();
             }
         };
 
