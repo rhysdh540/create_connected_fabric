@@ -16,6 +16,12 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+    exclusiveContent {
+        forRepository { maven("https://cursemaven.com") }
+        filter {
+            includeGroup("curse.maven")
+        }
+    }
     maven("https://maven.terraformersmc.com/releases") {
         content {
             includeGroup("com.terraformersmc")
@@ -25,6 +31,7 @@ repositories {
     maven("https://mvn.devos.one/snapshots")
     maven("https://maven.jamieswhiteshirt.com/libs-release")
     maven("https://maven.tterrag.com")
+    maven("https://maven.realrobotix.me/copycats")
 }
 
 configurations.configureEach {
@@ -59,6 +66,8 @@ dependencies {
 
     modImplementation("mezz.jei:jei-${"minecraft_version"()}-fabric:${"jei_version"()}")
     modCompileOnly("mezz.jei:jei-${"minecraft_version"()}-common:${"jei_version"()}")
+
+    modImplementation("com.copycatsplus:copycats:${"copycats_version"()}+mc.${"minecraft_version"()}-fabric")
 }
 
 tasks.withType<JavaCompile> {
@@ -67,7 +76,7 @@ tasks.withType<JavaCompile> {
 
 tasks.processResources {
     val props = mapOf(
-        "mod_version" to project.version,
+        "mod_version" to project.version.toString(),
         "minecraft_version" to "minecraft_version"(),
         "fabric_loader_version" to "fabric_loader_version"(),
         "fabric_api_version" to "fabric_api_version"(),

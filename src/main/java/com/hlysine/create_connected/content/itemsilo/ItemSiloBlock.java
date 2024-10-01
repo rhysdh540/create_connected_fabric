@@ -2,6 +2,8 @@ package com.hlysine.create_connected.content.itemsilo;
 
 import com.hlysine.create_connected.CCBlockEntityTypes;
 import com.hlysine.create_connected.CCBlocks;
+import io.github.fabricators_of_create.porting_lib.util.LazySoundType;
+
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.logistics.vault.ItemVaultBlock;
@@ -79,17 +81,16 @@ public class ItemSiloBlock extends Block implements IWrenchable, IBE<ItemSiloBlo
 
     // Vaults are less noisy when placed in batch
     public static final SoundType SILENCED_METAL =
-            new ForgeSoundType(0.1F, 1.5F, () -> SoundEvents.NETHERITE_BLOCK_BREAK, () -> SoundEvents.NETHERITE_BLOCK_STEP,
+            new LazySoundType(0.1F, 1.5F, () -> SoundEvents.NETHERITE_BLOCK_BREAK, () -> SoundEvents.NETHERITE_BLOCK_STEP,
                     () -> SoundEvents.NETHERITE_BLOCK_PLACE, () -> SoundEvents.NETHERITE_BLOCK_HIT,
                     () -> SoundEvents.NETHERITE_BLOCK_FALL);
 
     @Override
-    public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, Entity entity) {
-        SoundType soundType = super.getSoundType(state, world, pos, entity);
+    public SoundType getSoundType(BlockState state) {
         if (entity != null && entity.getPersistentData()
                 .contains("SilenceVaultSound"))
             return SILENCED_METAL;
-        return soundType;
+        return super.getSoundType(state);
     }
 
     @Override

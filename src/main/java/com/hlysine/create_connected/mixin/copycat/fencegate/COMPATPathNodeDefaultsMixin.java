@@ -5,6 +5,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +18,7 @@ public class COMPATPathNodeDefaultsMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getBlock()Lnet/minecraft/world/level/block/Block;"),
             method = "getNodeType(Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"
     )
+    @Dynamic
     private static Block getWrappedBlock(BlockState instance, Operation<Block> original) {
         return ICopycatWithWrappedBlock.unwrap(original.call(instance));
     }

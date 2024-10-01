@@ -3,6 +3,9 @@ package com.hlysine.create_connected.content.fluidvessel;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import io.github.fabricators_of_create.porting_lib.transfer.fluid.FluidTank;
+
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 import com.simibubi.create.foundation.fluid.FluidRenderer;
@@ -16,8 +19,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 public class FluidVesselRenderer extends SafeBlockEntityRenderer<FluidVesselBlockEntity> {
 
@@ -49,7 +50,7 @@ public class FluidVesselRenderer extends SafeBlockEntityRenderer<FluidVesselBloc
             return;
         float clampedLevel = Mth.clamp(level * totalHeight, 0, totalHeight);
 
-        FluidTank tank = (FluidTank) be.getTankInventory();
+        FluidTank tank = be.getTankInventory();
         FluidStack fluidStack = tank.getFluid();
 
         if (fluidStack.isEmpty())

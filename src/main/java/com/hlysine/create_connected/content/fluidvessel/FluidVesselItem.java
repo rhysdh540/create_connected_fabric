@@ -2,6 +2,9 @@ package com.hlysine.create_connected.content.fluidvessel;
 
 import com.hlysine.create_connected.CCBlockEntityTypes;
 import com.hlysine.create_connected.CCBlocks;
+import io.github.fabricators_of_create.porting_lib.entity.extensions.EntityExtensions;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.core.BlockPos;
@@ -17,7 +20,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
 
 public class FluidVesselItem extends BlockItem {
 
@@ -131,10 +133,10 @@ public class FluidVesselItem extends BlockItem {
 				if (FluidVesselBlock.isVessel(blockState))
 					continue;
 				BlockPlaceContext context = BlockPlaceContext.at(ctx, offsetPos, face);
-				player.getPersistentData()
+				player.getCustomData()
 						.putBoolean("SilenceVesselSound", true);
 				super.place(context);
-				player.getPersistentData().remove("SilenceVesselSound");
+				player.getCustomData().remove("SilenceVesselSound");
 			}
 		}
 	}

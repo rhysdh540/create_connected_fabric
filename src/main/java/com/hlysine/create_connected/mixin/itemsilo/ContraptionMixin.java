@@ -27,9 +27,6 @@ public abstract class ContraptionMixin {
     @Shadow
     protected Multimap<BlockPos, StructureTemplate.StructureBlockInfo> capturedMultiblocks;
 
-    @Shadow
-    protected abstract BlockPos toLocalPos(BlockPos globalPos);
-
     @Inject(
             at = @At("RETURN"),
             method = "readNBT"

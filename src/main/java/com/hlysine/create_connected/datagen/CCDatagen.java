@@ -3,7 +3,7 @@ package com.hlysine.create_connected.datagen;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.hlysine.create_connected.CCPonders;
-import com.hlysine.create_connected.CCSoundEvents;
+import com.hlysine.create_connected.CCSoundEntries;
 import com.hlysine.create_connected.CreateConnected;
 import com.hlysine.create_connected.datagen.advancements.CCAdvancements;
 import com.hlysine.create_connected.datagen.recipes.CCStandardRecipes;
@@ -42,7 +42,7 @@ public class CCDatagen implements DataGeneratorEntrypoint {
         CreateConnected.getRegistrate().setupDatagen(pack, helper);
 
         // if client
-        pack.addProvider(CCSoundEvents::provider);
+        pack.addProvider(CCSoundEntries::provider);
 
         // if server
         pack.addProvider(CCAdvancements::new);
@@ -60,7 +60,7 @@ public class CCDatagen implements DataGeneratorEntrypoint {
             provideDefaultLang("interface", langConsumer);
             provideDefaultLang("tooltips", langConsumer);
             CCAdvancements.provideLang(langConsumer);
-            CCSoundEvents.provideLang(langConsumer);
+            CCSoundEntries.provideLang(langConsumer);
             providePonderLang(langConsumer);
         });
     }

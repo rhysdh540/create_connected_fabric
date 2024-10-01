@@ -90,7 +90,7 @@ public abstract class ServerSchematicLoaderMixin {
     }
 
     @Inject(
-            at = @At(value = "INVOKE", target = "Ljava/nio/file/Files;deleteIfExists(Ljava/nio/file/Path;)Z", shift = At.Shift.AFTER),
+            at = @At(value = "INVOKE", target = "Ljava/nio/file/Files;deleteIfExists(Ljava/nio/file/Path;)Z", shift = At.Shift.AFTER, ordinal = 1),
             method = "handleNewUpload(Lnet/minecraft/server/level/ServerPlayer;Ljava/lang/String;JLnet/minecraft/core/BlockPos;)V"
     )
     private void deleteEmptyFolders(ServerPlayer player,

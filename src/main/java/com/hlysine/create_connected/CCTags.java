@@ -3,21 +3,16 @@ package com.hlysine.create_connected;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-
-import java.util.Collections;
 
 import static com.hlysine.create_connected.CCTags.NameSpace.*;
 
 public class CCTags {
     public static <T> TagKey<T> optionalTag(Registry<T> registry, ResourceLocation id) {
-        return registry.tags().createOptionalTagKey(id, Collections.emptySet());
+        return TagKey.create(registry.key(), id);
     }
 
     public static <T> TagKey<T> forgeTag(Registry<T> registry, String path) {
